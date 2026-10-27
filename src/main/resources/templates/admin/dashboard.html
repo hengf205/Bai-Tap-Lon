@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments/layout-head :: head('Tổng quan')}"></head><body><div th:replace="~{fragments/header :: header}"></div><div class="app-shell"><div th:replace="~{fragments/sidebar :: sidebar}"></div><main class="main-content"><div class="d-flex flex-wrap justify-content-between align-items-end mb-4"><div><h1 class="page-title">Tổng quan <span th:text="${campusSettings.bannerTitle}">Ký túc xá UTC</span></h1><p class="page-subtitle mb-0">Tình hình vận hành tại <span th:text="${campusSettings.institutionName}">Đại học Giao thông Vận tải</span> trong tháng <span th:text="${dashboard.currentMonth}"></span>/<span th:text="${dashboard.currentYear}"></span></p></div><span class="badge text-bg-light border px-3 py-2">Cập nhật hôm nay</span></div>
+<div class="row g-3 mb-4"><div class="col-6 col-xl-3"><div class="metric-card"><div class="d-flex justify-content-between"><span class="metric-label">Tòa nhà</span><span class="metric-icon"><i class="fa-solid fa-building"></i></span></div><div class="metric-value" th:text="${dashboard.totalBuildings}"></div></div></div><div class="col-6 col-xl-3"><div class="metric-card"><div class="d-flex justify-content-between"><span class="metric-label">Tổng số phòng</span><span class="metric-icon"><i class="fa-solid fa-door-open"></i></span></div><div class="metric-value" th:text="${dashboard.totalRooms}"></div></div></div><div class="col-6 col-xl-3"><div class="metric-card"><div class="d-flex justify-content-between"><span class="metric-label">Người thuê</span><span class="metric-icon"><i class="fa-solid fa-users"></i></span></div><div class="metric-value" th:text="${dashboard.totalTenants}"></div></div></div><div class="col-6 col-xl-3"><div class="metric-card"><div class="d-flex justify-content-between"><span class="metric-label">Hóa đơn chưa thanh toán</span><span class="metric-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span></div><div class="metric-value" th:text="${dashboard.unpaidInvoices}"></div></div></div></div>
+<div class="row g-3 mb-4"><div class="col-6 col-xl-3"><div class="metric-card"><span class="metric-label">Phòng trống</span><div class="metric-value text-success" th:text="${dashboard.availableRooms}"></div></div></div><div class="col-6 col-xl-3"><div class="metric-card"><span class="metric-label">Phòng đang sử dụng</span><div class="metric-value text-primary" th:text="${dashboard.occupiedRooms}"></div></div></div><div class="col-6 col-xl-3"><div class="metric-card"><span class="metric-label">Sự cố cần xử lý</span><div class="metric-value text-warning" th:text="${dashboard.pendingIncidents}"></div></div></div><div class="col-6 col-xl-3"><div class="metric-card"><span class="metric-label">Doanh thu tháng</span><div class="metric-value" th:text="${#numbers.formatDecimal(dashboard.currentMonthRevenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></div></div></div></div>
+<div class="row g-3"><div class="col-xl-8"><section class="panel"><h2 class="h6 fw-bold mb-3">Doanh thu theo tháng</h2><div class="chart-wrap"><canvas id="revenueChart" aria-label="Biểu đồ doanh thu theo tháng"></canvas></div></section></div><div class="col-xl-4"><section class="panel"><h2 class="h6 fw-bold mb-3">Tình trạng phòng</h2><div class="chart-wrap chart-wrap-small"><canvas id="roomStatusChart" aria-label="Biểu đồ tình trạng phòng"></canvas></div></section></div><div class="col-xl-7"><section class="panel"><h2 class="h6 fw-bold mb-3">Người thuê theo tòa nhà</h2><div class="chart-wrap chart-wrap-small"><canvas id="tenantBuildingChart" aria-label="Biểu đồ người thuê theo tòa nhà"></canvas></div></section></div><div class="col-xl-5"><section class="panel"><h2 class="h6 fw-bold mb-3">Doanh thu tiền phòng và dịch vụ</h2><div class="chart-wrap chart-wrap-small"><canvas id="incomeBreakdownChart" aria-label="Biểu đồ doanh thu theo loại"></canvas></div></section></div></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script th:inline="javascript">
+    const monthLabels = /*[[${dashboard.monthLabels}]]*/ [];
+    const monthlyRevenue = /*[[${dashboard.monthlyRevenueData}]]*/ [];
+    const roomLabels = /*[[${dashboard.roomStatusLabels}]]*/ [];
+    const roomCounts = /*[[${dashboard.roomStatusData}]]*/ [];
+    const roomRevenue = /*[[${dashboard.roomRevenueData}]]*/ [];
+    const serviceRevenue = /*[[${dashboard.serviceRevenueData}]]*/ [];
+    const tenantBuildingLabels = /*[[${#lists.toList(dashboard.tenantsByBuilding.keySet())}]]*/ [];
+    const tenantBuildingCounts = /*[[${#lists.toList(dashboard.tenantsByBuilding.values())}]]*/ [];
+    const chartColors = { blue: '#3157d5', green: '#19a974', amber: '#f4b740', red: '#e25353', gray: '#9aa5b1', purple: '#8064d8' };
+    new Chart(document.getElementById('revenueChart'), {
+        type: 'line',
+        data: { labels: monthLabels, datasets: [{ label: 'Doanh thu', data: monthlyRevenue, borderColor: chartColors.blue, backgroundColor: 'rgba(49,87,213,.12)', fill: true, tension: .32, pointRadius: 3 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(ctx.raw || 0) } } }, scales: { y: { beginAtZero: true, ticks: { callback: (value) => new Intl.NumberFormat('vi-VN', { notation: 'compact' }).format(value) } } } }
+    });
+    new Chart(document.getElementById('roomStatusChart'), {
+        type: 'doughnut',
+        data: { labels: roomLabels, datasets: [{ data: roomCounts, backgroundColor: [chartColors.green, chartColors.amber, chartColors.red, chartColors.gray], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '66%', plugins: { legend: { position: 'bottom' } } }
+    });
+    new Chart(document.getElementById('incomeBreakdownChart'), {
+        type: 'bar',
+        data: { labels: monthLabels, datasets: [{ label: 'Tiền phòng', data: roomRevenue, backgroundColor: chartColors.blue, borderRadius: 5 }, { label: 'Dịch vụ', data: serviceRevenue, backgroundColor: chartColors.purple, borderRadius: 5 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ': ' + new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(ctx.raw || 0) } } }, scales: { y: { beginAtZero: true, ticks: { callback: (value) => new Intl.NumberFormat('vi-VN', { notation: 'compact' }).format(value) } } } }
+    });
+    new Chart(document.getElementById('tenantBuildingChart'), {
+        type: 'bar',
+        data: { labels: tenantBuildingLabels, datasets: [{ label: 'Người thuê đang ở', data: tenantBuildingCounts, backgroundColor: chartColors.green, borderRadius: 5 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { precision: 0 } } } }
+    });
+</script>
+</main></div><div th:replace="~{fragments/footer :: footer}"></div></body></html>

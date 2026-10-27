@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${'Đăng ký thuê phòng | ' + campusSettings.bannerTitle}">Đăng ký thuê phòng | Ký túc xá UTC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>body{min-height:100vh;background:linear-gradient(135deg,#eef4ff,#f8fafc)}.register-card{max-width:1000px;border:0;border-radius:1rem}</style>
+</head>
+<body class="py-4 py-md-5">
+<main class="container">
+    <div class="card register-card shadow mx-auto"><div class="card-body p-4 p-md-5">
+        <div class="mb-4"><a th:href="@{/login}" class="text-decoration-none">← Quay lại đăng nhập</a><h1 class="h3 fw-bold mt-3 mb-1">Đăng ký thuê phòng</h1><p class="text-secondary mb-0">Đăng ký chỗ ở tại <span th:text="${campusSettings.institutionName}">Đại học Giao thông Vận tải</span>. Chọn tòa nhà, phòng và giường còn trống; yêu cầu sẽ được quản trị viên duyệt.</p></div>
+        <form method="post" th:action="@{/register}" th:object="${registration}" class="row g-3">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <div class="col-12" th:if="${#fields.hasGlobalErrors()}"><div class="alert alert-danger mb-0"><div th:each="error : ${#fields.globalErrors()}" th:text="${error}"></div></div></div>
+            <div class="col-12"><h2 class="h6 fw-bold border-bottom pb-2">Thông tin tài khoản</h2></div>
+            <div class="col-md-6"><label class="form-label">Tên đăng nhập</label><input class="form-control" th:field="*{username}" autocomplete="username" required><div class="small text-danger" th:errors="*{username}"></div></div>
+            <div class="col-md-6"><label class="form-label">Email</label><input class="form-control" type="email" th:field="*{email}" autocomplete="email" required><div class="small text-danger" th:errors="*{email}"></div></div>
+            <div class="col-md-6"><label class="form-label">Mật khẩu</label><input class="form-control" type="password" th:field="*{password}" autocomplete="new-password" required><div class="small text-danger" th:errors="*{password}"></div></div>
+            <div class="col-md-6"><label class="form-label">Nhập lại mật khẩu</label><input class="form-control" type="password" th:field="*{confirmPassword}" autocomplete="new-password" required><div class="small text-danger" th:errors="*{confirmPassword}"></div></div>
+            <div class="col-12 mt-4"><h2 class="h6 fw-bold border-bottom pb-2">Thông tin người thuê</h2></div>
+            <div class="col-md-6"><label class="form-label">Họ và tên</label><input class="form-control" th:field="*{fullName}" autocomplete="name" required><div class="small text-danger" th:errors="*{fullName}"></div></div>
+            <div class="col-md-6"><label class="form-label">Số điện thoại</label><input class="form-control" th:field="*{phone}" inputmode="numeric" autocomplete="tel" required><div class="small text-danger" th:errors="*{phone}"></div></div>
+            <div class="col-md-6"><label class="form-label">Mã sinh viên / mã người thuê</label><input class="form-control" th:field="*{studentCode}" required><div class="small text-danger" th:errors="*{studentCode}"></div></div>
+            <div class="col-md-6"><label class="form-label">Ngày sinh</label><input class="form-control" type="date" th:field="*{dateOfBirth}"></div>
+            <div class="col-md-6"><label class="form-label">Giới tính</label><select class="form-select" th:field="*{gender}"><option value="">Chọn giới tính</option><option th:each="g : ${genders}" th:value="${g}" th:text="${@displayLabels.label(g)}"></option></select></div>
+            <div class="col-md-6"><label class="form-label">Số căn cước</label><input class="form-control" th:field="*{identityCard}"></div>
+            <div class="col-md-6"><label class="form-label">Trường học</label><input class="form-control" th:value="${campusSettings.institutionName}" readonly><div class="form-text">Trường được quản trị viên cấu hình cho cơ sở này.</div></div>
+            <div class="col-md-6"><label class="form-label">Ngành học</label><input class="form-control" th:field="*{major}"></div>
+            <div class="col-12"><label class="form-label">Quê quán</label><input class="form-control" th:field="*{hometown}"></div>
+            <div class="col-12 mt-4"><h2 class="h6 fw-bold border-bottom pb-2">Chọn chỗ thuê</h2></div>
+            <div class="col-md-4"><label class="form-label">Tòa nhà</label><select id="buildingId" class="form-select" th:field="*{buildingId}" required><option value="">Chọn tòa nhà</option><option th:each="b : ${buildings}" th:value="${b.id}" th:text="${b.buildingName + ' (' + b.buildingCode + ')'}"></option></select><div class="small text-danger" th:errors="*{buildingId}"></div></div>
+            <div class="col-md-4"><label class="form-label">Phòng</label><select id="roomId" class="form-select" th:field="*{roomId}" disabled required><option value="">Chọn tòa nhà trước</option></select><div class="small text-danger" th:errors="*{roomId}"></div></div>
+            <div class="col-md-4"><label class="form-label">Giường</label><select id="bedId" class="form-select" th:field="*{bedId}" disabled required><option value="">Chọn phòng trước</option></select><div class="small text-danger" th:errors="*{bedId}"></div></div>
+            <div class="col-12"><div id="roomPrice" class="small text-secondary"></div><div class="form-text">Sau khi gửi, chỗ được giữ trong lúc chờ duyệt. Khi được duyệt, hóa đơn tiền phòng tháng đầu và tiền cọc có hạn thanh toán trong ngày.</div></div>
+            <div class="col-12 d-flex flex-wrap gap-2 mt-3"><button class="btn btn-primary">Gửi yêu cầu thuê</button><a class="btn btn-light" th:href="@{/login}">Hủy</a></div>
+        </form>
+    </div></div>
+</main>
+<script>
+const buildingSelect = document.getElementById('buildingId');
+const roomSelect = document.getElementById('roomId');
+const bedSelect = document.getElementById('bedId');
+const roomPrice = document.getElementById('roomPrice');
+const oldRoom = roomSelect.value;
+const oldBed = bedSelect.value;
+function reset(select, label) { select.replaceChildren(new Option(label, '')); select.disabled = true; }
+async function loadRooms() {
+  reset(roomSelect, 'Đang tải danh sách phòng…'); reset(bedSelect, 'Chọn phòng trước'); roomPrice.textContent = '';
+  if (!buildingSelect.value) { reset(roomSelect, 'Chọn tòa nhà trước'); return; }
+  const response = await fetch(`/register/rooms?buildingId=${encodeURIComponent(buildingSelect.value)}`);
+  const rooms = await response.json(); reset(roomSelect, rooms.length ? 'Chọn phòng' : 'Tòa nhà chưa có phòng trống');
+  rooms.forEach(room => roomSelect.add(new Option(`${room.roomCode} · tầng ${room.floorNumber} · ${room.availableBeds} giường trống`, room.id)));
+  roomSelect.disabled = rooms.length === 0;
+  if (oldRoom && rooms.some(room => String(room.id) === oldRoom)) { roomSelect.value = oldRoom; await loadBeds(); }
+}
+async function loadBeds() {
+  reset(bedSelect, 'Đang tải danh sách giường…'); roomPrice.textContent = '';
+  if (!roomSelect.value) { reset(bedSelect, 'Chọn phòng trước'); return; }
+  const response = await fetch(`/register/beds?roomId=${encodeURIComponent(roomSelect.value)}`);
+  const beds = await response.json(); reset(bedSelect, beds.length ? 'Chọn giường' : 'Phòng đã hết giường trống');
+  beds.forEach(bed => bedSelect.add(new Option(bed.bedCode, bed.id)));
+  bedSelect.disabled = beds.length === 0;
+  const room = await fetch(`/register/rooms?buildingId=${encodeURIComponent(buildingSelect.value)}`).then(r => r.json()).then(items => items.find(item => String(item.id) === roomSelect.value));
+  if (room) roomPrice.textContent = `Giá phòng dự kiến: ${new Intl.NumberFormat('vi-VN').format(room.monthlyPrice)} ₫/tháng`;
+  if (oldBed && beds.some(bed => String(bed.id) === oldBed)) bedSelect.value = oldBed;
+}
+buildingSelect.addEventListener('change', loadRooms);
+roomSelect.addEventListener('change', loadBeds);
+if (buildingSelect.value) loadRooms();
+</script>
+</body>
+</html>

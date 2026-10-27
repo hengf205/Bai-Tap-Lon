@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<header th:fragment="header" class="topbar d-flex align-items-center justify-content-between px-3 px-lg-4">
+    <a class="brand text-decoration-none" th:href="@{/admin/dashboard}" sec:authorize="hasRole('ADMIN')"><span class="brand-mark">KTX</span><span th:text="${campusSettings.bannerTitle}">Ký túc xá UTC</span></a>
+    <a class="brand text-decoration-none" th:href="@{/manager/dashboard}" sec:authorize="hasRole('MANAGER')"><span class="brand-mark">KTX</span><span th:text="${campusSettings.bannerTitle}">Ký túc xá UTC</span></a>
+    <a class="brand text-decoration-none" th:href="@{/tenant/dashboard}" sec:authorize="hasRole('TENANT')"><span class="brand-mark">KTX</span><span th:text="${campusSettings.bannerTitle}">Ký túc xá UTC</span></a>
+    <div class="d-flex align-items-center gap-3">
+        <span class="text-secondary small d-none d-sm-inline">Xin chào, <strong sec:authentication="name">người dùng</strong></span>
+        <form th:action="@{/logout}" method="post" class="m-0">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit" class="btn btn-outline-secondary btn-sm">Đăng xuất</button>
+        </form>
+    </div>
+</header>
+</body>
+</html>

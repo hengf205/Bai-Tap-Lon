@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-head :: head('Cài đặt cơ sở')}"></head>
+<body><div th:replace="~{fragments/header :: header}"></div><div class="app-shell"><div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="main-content"><h1 class="page-title">Cài đặt tên trường và banner</h1><p class="page-subtitle mb-4">Tùy chỉnh nhận diện hiển thị cho cơ sở ký túc xá này.</p>
+<div th:if="${param.saved}" class="alert alert-success">Đã lưu cài đặt cơ sở.</div>
+<section class="panel"><form method="post" enctype="multipart/form-data" th:action="@{/admin/settings/campus}" th:object="${settings}" class="row g-3">
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+<div class="col-md-6"><label class="form-label">Tên trường hoặc cơ sở</label><input class="form-control" th:field="*{institutionName}" maxlength="150" required><div class="small text-danger" th:errors="*{institutionName}"></div></div>
+<div class="col-md-6"><label class="form-label">Tiêu đề banner</label><input class="form-control" th:field="*{bannerTitle}" maxlength="120" required><div class="small text-danger" th:errors="*{bannerTitle}"></div></div>
+<div class="col-12"><label class="form-label">Mô tả banner</label><input class="form-control" th:field="*{bannerSubtitle}" maxlength="255" required><div class="small text-danger" th:errors="*{bannerSubtitle}"></div></div>
+<div class="col-md-8"><label class="form-label">Ảnh banner (không bắt buộc)</label><input class="form-control" type="file" name="bannerFile" accept="image/png,image/jpeg,image/webp"><div class="form-text">PNG, JPG hoặc WEBP; tối đa 5 MB. Để trống nếu muốn giữ ảnh hiện tại.</div></div>
+<div class="col-md-4 d-flex align-items-end" th:if="${campusSettings.bannerImage != null}"><img class="img-fluid rounded border" style="max-height:100px" th:src="${campusSettings.bannerImage}" alt="Ảnh banner hiện tại"></div>
+<div class="col-12 d-flex gap-2"><button class="btn btn-primary">Lưu cài đặt</button><a class="btn btn-light" th:href="@{/admin/dashboard}">Quay lại</a></div>
+</form></section></main></div><div th:replace="~{fragments/footer :: footer}"></div></body></html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<aside th:fragment="sidebar" class="sidebar">
+    <div class="sidebar-label">TỔNG QUAN</div>
+    <a class="side-link" th:href="@{/admin/dashboard}" sec:authorize="hasRole('ADMIN')"><i class="fa-solid fa-chart-line"></i> Tổng quan</a>
+    <a class="side-link" th:href="@{/manager/dashboard}" sec:authorize="hasRole('MANAGER')"><i class="fa-solid fa-chart-line"></i> Tổng quan</a>
+    <a class="side-link" th:href="@{/tenant/dashboard}" sec:authorize="hasRole('TENANT')"><i class="fa-solid fa-house"></i> Tổng quan</a>
+    <div sec:authorize="hasRole('ADMIN')">
+        <div class="sidebar-label mt-4">QUẢN LÝ</div>
+        <a class="side-link" th:href="@{/admin/buildings}"><i class="fa-solid fa-building"></i> Tòa nhà</a>
+        <a class="side-link" th:href="@{/admin/floors}"><i class="fa-solid fa-layer-group"></i> Tầng</a>
+        <a class="side-link" th:href="@{/admin/rooms}"><i class="fa-solid fa-door-open"></i> Phòng</a>
+        <a class="side-link" th:href="@{/admin/beds}"><i class="fa-solid fa-bed"></i> Giường</a>
+        <a class="side-link" th:href="@{/admin/tenants}"><i class="fa-solid fa-users"></i> Người thuê</a>
+        <a class="side-link" th:href="@{/admin/contracts}"><i class="fa-solid fa-file-contract"></i> Hợp đồng</a>
+        <a class="side-link" th:href="@{/admin/invoices}"><i class="fa-solid fa-file-invoice-dollar"></i> Hóa đơn</a>
+        <a class="side-link" th:href="@{/admin/payments}"><i class="fa-solid fa-money-bill-wave"></i> Thanh toán</a>
+        <a class="side-link" th:href="@{/admin/utilities}"><i class="fa-solid fa-bolt"></i> Điện nước</a>
+        <a class="side-link" th:href="@{/admin/assets}"><i class="fa-solid fa-box"></i> Tài sản</a>
+        <a class="side-link" th:href="@{/admin/services}"><i class="fa-solid fa-concierge-bell"></i> Dịch vụ</a>
+        <a class="side-link" th:href="@{/admin/users}"><i class="fa-solid fa-user-gear"></i> Tài khoản</a>
+        <a class="side-link" th:href="@{/admin/settings/campus}"><i class="fa-solid fa-sliders"></i> Tên trường và banner</a>
+    </div>
+    <div sec:authorize="hasAnyRole('ADMIN','MANAGER')">
+        <div class="sidebar-label mt-4">VẬN HÀNH</div>
+        <a class="side-link" th:href="@{/manager/incidents}"><i class="fa-solid fa-screwdriver-wrench"></i> Sự cố</a>
+    </div>
+    <div sec:authorize="hasRole('TENANT')">
+        <div class="sidebar-label mt-4">DỊCH VỤ</div>
+        <a class="side-link" th:href="@{/tenant/room}"><i class="fa-solid fa-bed"></i> Phòng của tôi</a>
+        <a class="side-link" th:href="@{/tenant/contracts}"><i class="fa-solid fa-file-contract"></i> Hợp đồng</a>
+        <a class="side-link" th:href="@{/tenant/invoices}"><i class="fa-solid fa-file-invoice"></i> Hóa đơn</a>
+        <a class="side-link" th:href="@{/tenant/payments}"><i class="fa-solid fa-money-bill-wave"></i> Lịch sử thanh toán</a>
+        <a class="side-link" th:href="@{/tenant/incidents}"><i class="fa-solid fa-wrench"></i> Báo sự cố</a>
+        <a class="side-link" th:href="@{/tenant/notifications}"><i class="fa-solid fa-bell"></i> Thông báo</a>
+        <a class="side-link" th:href="@{/tenant/profile}"><i class="fa-solid fa-user"></i> Hồ sơ</a>
+        <a class="side-link" th:href="@{/tenant/password}"><i class="fa-solid fa-key"></i> Đổi mật khẩu</a>
+    </div>
+</aside>
+</body>
+</html>
